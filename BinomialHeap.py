@@ -20,21 +20,17 @@ class BinomialTree:
 class BinomialHeap:
 	def __init__(self, trees = None):
 		if trees == None: trees = []
-		elif trees[-1] != None: trees.append(None) 
-		# The trees list should always end with a NoneType object
-		# (Refer to add_tree method for reason) 
-		# except if the trees list is empty in which case it wouldn't matter.
-		# (pad_upto will take care of that)
-
 		self.trees = trees # List of binomial trees
+
+	def rank_of_largest_tree(self):
+		return len(self.trees) - 1
 
 	def pad_upto(self, newrank):
 		"If newrank exceeds the largest rank in the heap,\
 		then pad the trees array with None until and including newrank."
 		
-		rank_of_largest_tree = len(self.trees) - 1
-		i = rank_of_largest_tree
-		while i <= newrank:
+		i = self.rank_of_largest_tree()
+		while i < newrank:
 			self.trees.append(None)
 			i += 1
 
@@ -48,17 +44,15 @@ class BinomialHeap:
 
 	def add_tree(self, newtree):
 		self.pad_upto(newtree.rank) # otherwise IndexError will be raised
+		self.trees.append(None)
 		while self.trees[newtree.rank] is not None:
 			rank = newtree.rank
 			oldtree = self.trees[rank]
 			newtree = self.link(oldtree, newtree) # rank is incremented within
 			self.trees[rank] = None
 		self.trees[newtree.rank] = newtree
-
-		# Let's take the case where the bino heap is 111. If you add
-		# a 0-deg tree, it becomes 1000. If tree[-1] is not None, then an 
-		# IndexError will be raised when you try that.
-		if self.trees[-1] != None: self.trees.append(None)
+		if self.trees[-1] == None: # no carry out of msb
+			self.trees.pop()
 
 	def meld(self, other):
 		"Merges two BinomialHeaps into self.\
@@ -66,10 +60,17 @@ class BinomialHeap:
 		 cannot be accessed using other."
 
 		assert self is not other, "You cannot meld a heap with itself."
-		for ind, tree in enumerate(other.trees):
+
+		# It's better to add the trees from the smaller BinomialHeap
+		# to the bigger BinomialHeap. 
+		if len(self.trees) < len(other.trees):
+			self.trees, other.trees = other.trees, self.trees
+
+		for tree in other.trees:
 			if tree: 
 				self.add_tree(tree) 
 		other.trees = []
+
 
 	def insert(self, ele):
 		newtree = BinomialTree(ele)
@@ -78,26 +79,21 @@ class BinomialHeap:
 	def find_min(self):
 		"Returns value of min root if there is at least one root,\
 		 else returns None"
-		
-		minn = float('inf')
-		for tree in self.trees:
-			try: minn = min(tree.value, minn)
-			except AttributeError: continue
-		return minn if minn != float('inf') else None
+		try:
+			minn = min(tree.value for tree in self.trees if tree)
+			return minn
+		except ValueError: # BIno heap has no trees
+			return None
 
 	def __find_min_ind(self):
 		"Returns index of min root if there is at least one root,\
 		 else returns None"
-
-		minn = float('inf')
-		minind = None
-		for ind, tree in enumerate(self.trees):
-			try: 
-				if minn > tree.value:
-					minn = tree.value
-					minind = ind
-			except AttributeError: continue
-		return minind if minn != float('inf') else None
+		try:
+			min_ind = min(((ind, tree) for ind, tree in enumerate(self.trees) if tree),\
+						  key = lambda indexandtree: indexandtree[1].value)[0]
+			return min_ind
+		except ValueError: # Bino heap has no trees
+			return None
 
 	def extract_min(self):
 		"Removes min root and adds its children to the BinomialHeap"
@@ -107,12 +103,11 @@ class BinomialHeap:
 		
 		tree = self.trees[min_ind]
 		minn = tree.value
-		newheap = BinomialHeap(trees = tree.children + [None])
+		newheap = BinomialHeap(trees = tree.children)
 
 		self.trees[min_ind] = None
 		# Ensuring there is exactly one NoneType object at the end.
-		rank_of_largest_tree = len(self.trees) - 1
-		if min_ind == rank_of_largest_tree: self.trees.pop()
+		if min_ind == self.rank_of_largest_tree(): self.trees.pop()
 
 		self.meld(newheap)
 		return minn		
@@ -121,21 +116,31 @@ class BinomialHeap:
 		"Displays heap in tabbed fashion."
 
 		for tree in self.trees:
-			try: tree.display()
-			except AttributeError: print(None)
+			if tree: tree.display()
+			else: print(None)
 
 	def binary(self):
 		"Returns representation of the binomial heap as a binary number"
-		if len(self.trees) == 0: return ""
+		if len(self.trees) == 0: return "0"
 		binary_rep = ""
-		for tree in self.trees[:-1]:
-			if tree:
-				binary_rep += "1"
+		for tree in self.trees:
+			if tree: binary_rep += "1"
 			else: binary_rep += "0"
 		binary_rep = binary_rep[::-1]
 		return binary_rep
 
-
+# Test for binary 
+def test10():
+	mylist = [67, 89, 32, 12, 34, 67, 94]
+	ah = BinomialHeap()
+	for ele in mylist: ah.insert(ele)
+	ah.display(); input()
+	print(ah.binary())
+	ah.insert(89)
+	print(ah.binary())
+	for i in range(10):
+		ah.extract_min(); print(ah.binary())
+	
 # Tests for extract min 
 def test9():
 	mylist = [67, 89, 32, 12, 34, 67, 94]
@@ -143,15 +148,14 @@ def test9():
 	for ele in mylist: ah.insert(ele)
 	ah.display(); input()
 
-	for i in range(7):
+	for i in range(8):
 		minn = ah.extract_min()
 		print("Minimum : {}".format(minn))
 		ah.display(); input()
-test9()
 
 # Tests for meld
 def test8():
-	ah = BinomialHeap([78, None])
+	ah = BinomialHeap([BinomialTree(78)])
 	ah.meld(ah) # Should raise Assertion error
 
 def test7():
@@ -235,12 +239,11 @@ def test3():
 	print("------")
 		
 	print("Result after doing first bino heap += last tree of second bino heap")
-	ah.add_tree(bh.trees[-2])
+	ah.add_tree(bh.trees[-1])
 	ah.display()
 	# Obviously any changes you make to that last tree of the \
 	# second bino heap are reflected on the first bino heap\
 	# and vice versa.
-
 def test2():
 	from random import randint
 	randy = lambda: randint(1, 99)
@@ -266,5 +269,3 @@ def test1():
 	b.add_child(d)
 	b.add_child(a)
 	b.display()
-
-
