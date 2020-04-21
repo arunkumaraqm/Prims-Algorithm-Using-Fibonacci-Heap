@@ -2,6 +2,8 @@
 
 class BinomialTree:
 	def __init__(self, value):
+		self.parent = None
+		self.index = 0
 		self.value = value
 		self.rank = 0
 		self.children = [] # List of binomial trees
@@ -9,6 +11,8 @@ class BinomialTree:
 	def add_child(self, childtree): 
 	# childtree will have the same rank as self
 	# childtree will maintain heap property 
+		childtree.parent = self
+		childtree.index = len(self.children)
 		self.children.append(childtree)
 		self.rank += 1
 
@@ -16,6 +20,21 @@ class BinomialTree:
 		print(tabwidth*"    ", self.value, sep = "")
 		for childtree in self.children:
 			childtree.display(tabwidth + 1)
+
+	def sift_up(self, ind):
+		"""
+		Swaps node with its parent repeatedly
+		until the node is larger than its parent.
+		"""
+		while True:
+			parent = ind//2
+			if parent == 0: break
+			if self.arr[ind] < self.arr[parent]:
+				self.swap(ind, parent)
+				ind = parent
+			else:
+				break
+
 
 class BinomialHeap:
 	def __init__(self, trees = None):
@@ -42,7 +61,7 @@ class BinomialHeap:
 		one.add_child(two) # rank of one is incremented within
 		return one 
 
-	def add_tree(self, newtree):
+	def __add_tree(self, newtree):
 		self.pad_upto(newtree.rank) # otherwise IndexError will be raised
 		self.trees.append(None)
 		while self.trees[newtree.rank] is not None:
@@ -68,13 +87,13 @@ class BinomialHeap:
 
 		for tree in other.trees:
 			if tree: 
-				self.add_tree(tree) 
+				self.__add_tree(tree) 
 		other.trees = []
 
 
 	def insert(self, ele):
 		newtree = BinomialTree(ele)
-		self.add_tree(newtree)
+		self.__add_tree(newtree)
 
 	def find_min(self):
 		"Returns value of min root if there is at least one root,\
@@ -154,8 +173,8 @@ def test9():
 		ah.display(); input()
 
 # Tests for meld
-def test8():
-	ah = BinomialHeap([BinomialTree(78)])
+def test8(): #won't work with modified code
+	ah = BinomialHeap([BinomialTree(78)]) ##
 	ah.meld(ah) # Should raise Assertion error
 
 def test7():
@@ -221,7 +240,7 @@ def test4():
 		#ah.display()
 		print("Min: ", ah.find_min())
 # Tests for insert
-def test3():
+def test3(): #won't work with modified code
 	ah = BinomialHeap()
 	for ele in [67, 89, 32, 12, 34, 67, 94]:
 		ah.insert(ele)
@@ -239,7 +258,7 @@ def test3():
 	print("------")
 		
 	print("Result after doing first bino heap += last tree of second bino heap")
-	ah.add_tree(bh.trees[-1])
+	ah.__add_tree(bh.trees[-1])##
 	ah.display()
 	# Obviously any changes you make to that last tree of the \
 	# second bino heap are reflected on the first bino heap\
