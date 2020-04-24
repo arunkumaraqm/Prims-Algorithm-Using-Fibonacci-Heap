@@ -1,3 +1,7 @@
+"""
+Prim's implemented with adjacency matrix and traversal.
+Eager - Insert, extract_min and decrease_key are for keys corresponding to vertices.
+"""
 INFINITY = float('inf')
 
 class Graph:
@@ -56,14 +60,14 @@ def prims_mst(graph):
 
 		for v in adjacent_vertices_of(u, graph):
 			if visited[v] == False and graph.mat[u][v] < key[v]:
-				decrease_key(key, v, graph.mat[u][v])
+				decrease_key(key, v, graph.mat[u][v]) # TODO Maybe this could be made more efficient.
 				precursor[v] = u
 
 	#print(f"key = {key}")
 	#print(f"precursor = {[i + 1 for i in precursor]}")
-	return key, precursor
+	return precursor
 
-def compute_mst_and_cost(key, precursor, graph):
+def compute_mst_and_cost(precursor, graph):
 	"Makes the adjacency matrix of the minimum spanning tree,\
 	 returns that graph and also returns the total cost of the MST."
 	
@@ -86,8 +90,8 @@ def main():
 	graph = Graph(nfverts)
 	graph.read_adjacency_matrix()
 	
-	key, precursor = prims_mst(graph)
-	mst, cost = compute_mst_and_cost(key, precursor, graph)
+	precursor = prims_mst(graph)
+	mst, cost = compute_mst_and_cost(precursor, graph)
 	
 	print(mst)
 	print(f"Cost = {cost}")
