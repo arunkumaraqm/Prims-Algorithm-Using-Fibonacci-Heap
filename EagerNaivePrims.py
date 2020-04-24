@@ -60,7 +60,7 @@ def prims_mst(graph):
 
 		for v in adjacent_vertices_of(u, graph):
 			if visited[v] == False and graph.mat[u][v] < key[v]:
-				decrease_key(key, v, graph.mat[u][v]) # TODO Maybe this could be made more efficient.
+				decrease_key(key, v, graph.mat[u][v]) 
 				precursor[v] = u
 
 	#print(f"key = {key}")
