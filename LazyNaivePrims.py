@@ -79,7 +79,6 @@ def prims_mst(graph):
 			if visited[other_vx] == False:
 				new_node = EdgeNode(cur_vx, other_vx, graph.mat[cur_vx][other_vx])
 				edge_list.insert(new_node)
-		print(edge_list)
 
 	src = 0
 	visited[src] = True
@@ -104,7 +103,6 @@ def prims_mst(graph):
 
 	#print(f"key = {key}")
 	#print(f"precursor = {[i + 1 for i in precursor]}")
-	print(precursor)
 	return precursor
 
 def compute_mst_and_cost(precursor, graph):
