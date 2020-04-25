@@ -1,3 +1,5 @@
+INFINITY = float('inf')
+
 class MinHeap:
 	"""
 	Binary min-heap using array method.
@@ -177,7 +179,7 @@ class MinHeapForPrims(MinHeap):
 
 	def decrease_key(self, vertex, new_key):
 		# Decreases the key for a given vertex to new_key.
-		
+
 		node = self.vertex_heapnode_map[vertex]
 
 		assert node.key >= new_key, "New value is greater than current value!"
