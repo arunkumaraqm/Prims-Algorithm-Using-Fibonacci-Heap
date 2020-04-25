@@ -3,7 +3,6 @@ Prim's implemented with adjacency matrix and traversal.
 Lazy - edges are extracted and inserted, as opposed to vertices.
 """
 from Graph import Graph
-INFINITY = float('inf')
 
 class EdgeNode:
 	"""
@@ -45,10 +44,11 @@ class EdgeList(list):
 		# Extracts and returns minimum edge in EdgeList object.
 
 		try:
-			min_ind, min_edge_node = min(enumerate(self), key = lambda tupl: tupl[1])
+			min_ind, min_edge_node = min(enumerate(self), key = lambda tupl: tupl[1].weight)
 		except ValueError: # Empty sequence
 			raise ValueError('Nothing to extract.')
 		else: 
+			del self[min_ind]
 			return min_edge_node
 
 	def insert(self, new_node):
@@ -101,36 +101,3 @@ def prims_mst(grf):
 		insert_useful_edges_to_edge_list(cur_vx)
 
 	return precursor
-
-def compute_mst_and_cost(precursor, grf):
-	"""
-	Makes the adjacency matrix of the minimum spanning tree,
-	returns that graph and also returns the total cost of the MST.
-	"""
-	
-	mst = Graph(grf.nfverts, representation = "matrix")
-	mst.fill_with_zeros()
-	cost = 0
-
-	# precursor[0] is useless.
-	for cur, parent in enumerate(precursor[1:], 1):
-		#print(f"(cur, par) = ({cur, parent})")
-		mst.graph[parent][cur] = grf.graph[parent][cur]
-		cost += grf.graph[parent][cur]
-	
-	return mst, cost
-
-
-def main():
-	# Driver function.
-	nfverts = int(input())
-	grf = Graph(nfverts)
-	grf.read_from_stdin()
-	
-	precursor = prims_mst(grf)
-	mst, cost = compute_mst_and_cost(precursor, grf)
-	
-	print(mst)
-	print(f"Cost = {cost}")
-
-main()

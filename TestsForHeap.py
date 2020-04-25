@@ -1,4 +1,4 @@
-from BinaryHeapStandard import MinHeap, heapsort
+from BinaryHeap import MinHeap, heapsort
 
 # Tests for heapsort
 def heapsort_test_1():
