@@ -44,15 +44,15 @@ class EdgeList(list):
 	def extract_min(self):
 		# Extracts and returns minimum edge in EdgeList object.
 
-		min_ind, minn = min(enumerate(self), key = lambda tupl: tupl[1])
+		try:
+			min_ind, min_edge_node = min(enumerate(self), key = lambda tupl: tupl[1])
+		except ValueError: # Empty sequence
+			raise ValueError('Nothing to extract.')
+		else: 
+			return min_edge_node
 
-		try: del self[min_ind]
-		except TypeError: 
-			raise TypeError("Nothing to extract!")
-		
-		return minn
-
-	def insert(self, new_node: EdgeNode):
+	def insert(self, new_node):
+		assert type(new_node) == EdgeNode
 		self.append(new_node)
 
 	def __str__(self):
@@ -67,8 +67,8 @@ def prims_mst(grf):
 	def adjacent_vertices_of(u_vertex):
 		# Generator returning adjacent vertices of a given vertex.
 		
-		for v_vertex, edge_cost in enumerate(grf.graph[u_vertex]):
-			if edge_cost > 0:
+		for v_vertex, edge_wt in enumerate(grf.graph[u_vertex]):
+			if edge_wt != 0:
 				yield v_vertex
 
 	def insert_useful_edges_to_edge_list(cur_vx):
@@ -103,10 +103,12 @@ def prims_mst(grf):
 	return precursor
 
 def compute_mst_and_cost(precursor, grf):
-	"Makes the adjacency graphrix of the minimum spanning tree,\
-	 returns that graph and also returns the total cost of the MST."
+	"""
+	Makes the adjacency matrix of the minimum spanning tree,
+	returns that graph and also returns the total cost of the MST.
+	"""
 	
-	mst = Graph(grf.nfverts)
+	mst = Graph(grf.nfverts, representation = "matrix")
 	mst.fill_with_zeros()
 	cost = 0
 
@@ -120,7 +122,7 @@ def compute_mst_and_cost(precursor, grf):
 
 
 def main():
-	"Driver function."
+	# Driver function.
 	nfverts = int(input())
 	grf = Graph(nfverts)
 	grf.read_from_stdin()
@@ -130,4 +132,5 @@ def main():
 	
 	print(mst)
 	print(f"Cost = {cost}")
+
 main()
