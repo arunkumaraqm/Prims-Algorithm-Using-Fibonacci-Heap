@@ -1,6 +1,10 @@
 from collections import defaultdict
 INFINITY = float('inf')
-teststr = "loud"##
+teststr = "silent"## Remember to use global when you use this.
+def show(something):
+	if teststr == "loud": print(something)
+def struc(something):
+	if teststr == "loud": something.print_heap()
 
 class FibHeapNode:
 	"""
@@ -42,8 +46,12 @@ class FibHeapNode:
 		An asterisk after the value indicates that this node is marked
 		"""
 
-		print(tabwidth*"    ", self.ele, '*' if self.mark else '', sep = "")
-		input()#
+		if teststr == "silent": 
+			print(tabwidth*"    ", self.ele, '*' if self.mark else '', sep = "")
+		elif teststr == "loud":
+			print(tabwidth*"    ", end = " ")
+			show((self.ele, id(self)))
+		#input()#
 		for childtree in self.children_generator():
 			childtree.print_tree(tabwidth + 1)
 
@@ -128,7 +136,7 @@ class FibHeap:
 
 
 	def print_heap(self):
-		print("head and minnode", self.head, self.min_node)
+		print("### head and minnode", self.head, self.min_node)
 		for root in self.__root_list_generator():
 			#print(root, '(', root.left, root.right, root.child,')')
 			root.print_tree()
@@ -152,7 +160,7 @@ class FibHeap:
 
 		def merging_trees(cur_root):
 			other_root = self.degree_tree_map[cur_root.rank]
-			#print(other_root)#
+
 
 			if other_root is None:
 				self.degree_tree_map[cur_root.rank] = cur_root
@@ -170,28 +178,35 @@ class FibHeap:
 
 				merging_trees(combined_root)
 
-		self.min_node = self.head
-
 		for cur_root in self.__root_list_generator():
-			# print(cur_root, self.head, end=" ")
-		
-			if cur_root < self.min_node:
-				self.min_node = cur_root
-
 			merging_trees(cur_root)
 
+		 # Maybe this can be done earlier.
+		try:
+			roots_iter = filter(lambda node: node is not None, self.degree_tree_map.values())
+			self.min_node = min(roots_iter) 
+			"""
+			Note: This does not have to be the node of the first_occurence of the minimum ele
+			since dictionaries are not ordered by their key.
+			This means you could have a node with ele 4 as head and another node with ele 4 as tail
+			and self.min_node could point to the latter.
+			"""
+		except ValueError as err:
+			if str(err) == "min() arg is an empty sequence":
+				self.min_node = None
+			else: 
+				raise ValueError(err)
 
 	def __attach(self, node1, node2):
 		# Connecting node 1 and node 2 such that node 2 is at node 1's right side
 		node1.right = node2
 		node2.left = node1
 
-	def __merge_lls(self, head_one, head_two, teststr = ""):
+	def __merge_lls(self, head_one, head_two):
 		# Merging two circular doubly linked lists and returning the new head.
 		tail_one, tail_two = head_one.left, head_two.left
 		self.__attach(tail_one, head_two)
 		self.__attach(tail_two, head_one)
-		if teststr != "silent": self.print_heap()
 		return head_one
 
 	def extract_min(self):
@@ -199,20 +214,18 @@ class FibHeap:
 			raise IndexError("Popping from an empty heap.")
 
 		node_to_be_popped = self.min_node
+
 		if node_to_be_popped.child: 
 			# If the node to be popped has any children,
 			# Add them to the root list.
 			self.__merge_lls(self.head, node_to_be_popped.child)
 
-		if teststr == "loud": self.print_heap()#
-
-		if node_to_be_popped is self.head: self.head = self.head.right # Test this. 
 		self.__remove_node(node_to_be_popped)
 		self.__consolidate()
 
 		return node_to_be_popped.ele
 		
-def not_extract_min_test(mylist):
+def extract_min_test(mylist):
 	heap = FibHeap()
 	
 	for i in mylist:
@@ -225,43 +238,21 @@ def not_extract_min_test(mylist):
 		heap.extract_min()
 		heap.print_heap()
 
-def extract_min_test(mylist):
-	heap = FibHeap()
-	
-	for i in mylist:
-		heap.insert(i)
-	#print("After all insertions:")
-	#heap.print_heap()#
-
-	for x in range(4):
-	#	print(f"After {x + 1}th extraction:")
-		heap.extract_min("silent")
-	#print("after 4th ex")
-	#heap.print_heap()
-	print("during 5th ex")
-	heap.extract_min("loud")
-	print("after 5th ex")
-	heap.print_heap()
-	#heap.extract_min()
-"""
-After 4th extraction:
-head and minnode 4 4
-4
-    7
-    4
-        4
-    8
-        8
-        9
-            10
-"""
+	try: heap.extract_min()
+	except IndexError as err:
+		if str(err) == "Popping from an empty heap.":
+			pass
+		else: raise IndexError(err)
 
 extract_min_test_1 = lambda: extract_min_test([1, 2])
 extract_min_test_2 = lambda: extract_min_test([1, 2, 3, 4])
 extract_min_test_3 = lambda: extract_min_test([10, 20, 30, 40, 50, 60, 70, 80])
 extract_min_test_4 = lambda: extract_min_test([8, 8, 2, 4, 1, 4, 2, 9, 10, 4, 2, 7])
+extract_min_test_5 = lambda: extract_min_test([10])
+extract_min_test_6 = lambda: extract_min_test([20, 10, 40, 28, 46, 10, 35, 26, 83, 18, 32, 46])
+extract_min_test_7 = lambda: extract_min_test([])
 
-extract_min_test_4()
+extract_min_test_6()
 
 def _FibHeap__remove_node_test_1():
 	heap = FibHeap()
