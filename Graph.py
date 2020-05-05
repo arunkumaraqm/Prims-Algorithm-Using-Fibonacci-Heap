@@ -11,6 +11,7 @@ class Graph:
 	0: {4: 500},
 	1: {4: 900},
 	4: {0: 500, 1: 900}
+
 	}
 
 	In both representations, an edge weight can be accessed by graph[u][v]
@@ -18,7 +19,7 @@ class Graph:
 	An object of this class cannot have both of these representations simulataneously.
 	"""
 
-	def __init__(self, nfverts, representation = None):
+	def __init__(self, nfverts = None, representation = None):
 		self.nfverts = nfverts # no. of vertices
 
 		self.representation = representation if representation else "matrix"
@@ -31,20 +32,45 @@ class Graph:
 		else:
 			raise ValueError("Invalid representation.")
 
-	def __read_adjacency_matrix(self):
-		for _ in range(self.nfverts):
-			self.graph.append([int(number) for number in input().split()])
-			
-	def __read_adjacency_lists(self): 
-		for u in range(self.nfverts):
-			for v, number in enumerate(input().split()):
-				number = int(number)
-				if number != 0: self.graph[u][v] = number
-		
-	def read_from_stdin(self):
+	def read_from_file(self, input_file): 
 		# The input should be an adjacency matrix either way.
-		if self.representation == "matrix": self.__read_adjacency_matrix()	
-		else: self.__read_adjacency_lists()
+
+		self.nfverts = int(input_file.readline())
+		
+		if self.representation == "matrix": 
+			def inner_loop(u):
+				self.graph.append([int(number) for number in input_file.readline().split()])
+		else:
+			def inner_loop(u):
+				for v, number in enumerate(input_file.readline().split()):
+					number = int(number)
+					if number != 0: self.graph[u][v] = number
+
+
+		for u in range(self.nfverts): 
+			inner_loop(u)
+
+	def change_representation(self): # Untested
+
+		if self.representation == "matrix":
+			adj_lists = defaultdict(dict)
+			for i, row in enumerate(graph):
+				for j, ele in enumerate(row):
+					if ele != 0: adj_lists[i][j] = ele
+			self.graph = adj_lists
+		
+		else:
+			adj_mat = []
+			for i in range(nfverts):
+				row = []
+				for j in range(nfverts):
+					try:
+						ele = graph[i][j]
+					except KeyError:
+						ele = 0
+					row.append(ele)
+				adj_mat.append(row)
+			self.graph = adj_mat
 
 	def fill_with_zeros(self):
 		# Fill the adjacency matrix with zeros to initialize mst.
@@ -57,3 +83,21 @@ class Graph:
 			return "\n".join(str(row) for row in self.graph)
 		else: # You expect that it prints edges but that's not what it does.
 			return '\n'.join(str(adj_list) for adj_list in self.graph.items())
+
+def compute_mst_and_cost(precursor, grf):
+	"""
+	Makes the adjacency matrix of the minimum spanning tree,
+	returns that graph and also returns the total cost of the MST.
+	"""
+	
+	mst = Graph(grf.nfverts, representation = "matrix")
+	mst.fill_with_zeros()
+	cost = 0
+
+	# precursor[0] is useless.
+	for cur, parent in enumerate(precursor[1:], 1):
+		#print(f"(cur, par) = ({cur, parent})")
+		mst.graph[parent][cur] = grf.graph[parent][cur]
+		cost += grf.graph[parent][cur]
+	
+	return mst, cost
