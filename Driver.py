@@ -4,6 +4,7 @@ from Graph import Graph, compute_mst_and_cost
 from LazyNaivePrims import prims_mst as lazy_naive_prims
 from EagerNaivePrims import prims_mst as eager_naive_prims
 from BinaryHeapPrims import prims_mst as binary_heap_prims
+from FibHeapPrims import prims_mst as fib_heap_prims
 
 def read(grf):
 
@@ -18,10 +19,11 @@ def read(grf):
 		grf.read_from_file(input_file)
 	
 def main():
-	prims = [lazy_naive_prims, eager_naive_prims, binary_heap_prims][1]
+	prims = [lazy_naive_prims, eager_naive_prims, binary_heap_prims, fib_heap_prims][3]
 	representation = {lazy_naive_prims: "matrix", 
 					  eager_naive_prims: "matrix",
-					  binary_heap_prims: "lists"} [prims]
+					  binary_heap_prims: "lists",
+					  fib_heap_prims: "lists"} [prims]
 
 	grf = Graph(representation = representation)
 	read(grf)
