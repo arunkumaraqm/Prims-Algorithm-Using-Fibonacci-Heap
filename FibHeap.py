@@ -84,18 +84,6 @@ class FibHeap:
 			self.head = head
 			self.min_node = min_node
 
-	def insert(self, new_ele):
-		# Inserting the newnode at the end of the root list.
-		new_node = FibHeapNode(new_ele)
-
-		if self.head:
-			self.__merge_lls(self.head, new_node)
-
-			if new_node < self.min_node: self.min_node = new_node
-
-		else: # empty heap
-			self.head = new_node
-			self.min_node = new_node
 
 	def merge(self, other):
 		if self.head is None:
@@ -109,7 +97,6 @@ class FibHeap:
 
 		other.head = None
 		other.min_node = None
-
 
 	def __link(self, node1, node2): # Assuming node1 and node2 are roots.
 		node2.parent = node1
@@ -133,7 +120,6 @@ class FibHeap:
 			cur_node = cur_node.right
 
 		yield cur_node.left
-
 
 	def print_heap(self):
 		print("### head and minnode", self.head, self.min_node)
@@ -221,186 +207,94 @@ class FibHeap:
 			self.__merge_lls(self.head, node_to_be_popped.child)
 
 		self.__remove_node(node_to_be_popped)
+		# node_to_be_popped has now been popped.
+
 		self.__consolidate()
 
-		return node_to_be_popped.ele
-		
-def extract_min_test(mylist):
-	heap = FibHeap()
+		temp = node_to_be_popped.ele
+		node_to_be_popped.ele = INFINITY # For later
+		return temp
+
+	def __cut(self, node):
+		# Assumes node is not None and node.parent is not None.
+
+		print(f"Cutting {node}")
+		if node is node.right: # If cdll only has one node right now.
+			node.parent.child = None
+			
+		else:
+			if node.parent.child is node: # If the head is the node to be popped.
+				node.parent.child = node.parent.child.right
+
+			self.__attach(node.left, node.right)
+
+			node.left, node.right = node, node
 	
-	for i in mylist:
-		heap.insert(i)
-	print("After all insertions:")
-	heap.print_heap()#
+		node.parent.rank -= 1
+		node.parent = None			
 
-	for x in range(len(mylist)):
-		print(f"After {x + 1}th extraction:")
-		heap.extract_min()
-		heap.print_heap()
+		self.__insert_node(node) 
 
-	try: heap.extract_min()
-	except IndexError as err:
-		if str(err) == "Popping from an empty heap.":
+	def __cascading_cut(self, node):
+		print(f"Cascade Cutting {node}")
+		# if node is a root
+		if node.parent is None or node.parent.ele == INFINITY:
 			pass
-		else: raise IndexError(err)
 
-extract_min_test_1 = lambda: extract_min_test([1, 2])
-extract_min_test_2 = lambda: extract_min_test([1, 2, 3, 4])
-extract_min_test_3 = lambda: extract_min_test([10, 20, 30, 40, 50, 60, 70, 80])
-extract_min_test_4 = lambda: extract_min_test([8, 8, 2, 4, 1, 4, 2, 9, 10, 4, 2, 7])
-extract_min_test_5 = lambda: extract_min_test([10])
-extract_min_test_6 = lambda: extract_min_test([20, 10, 40, 28, 46, 10, 35, 26, 83, 18, 32, 46])
-extract_min_test_7 = lambda: extract_min_test([])
-
-extract_min_test_6()
-
-def _FibHeap__remove_node_test_1():
-	heap = FibHeap()
-	for i in [1]:
-		heap.insert(i)
-	heap._FibHeap__remove_node(heap.head)
-	print(heap.head, heap.min_node)
-	assert heap.head is None
-
-	heap = FibHeap()
-	for i in [1, 2]:
-		heap.insert(i)
-	heap._FibHeap__remove_node(heap.head.right)
-	print(heap.head, heap.min_node, heap.head.right, heap.head.left)
-
-	heap = FibHeap()
-	for i in [1, 2]:
-		heap.insert(i)
-	heap._FibHeap__remove_node(heap.head.left)
-	print(heap.head, heap.min_node, heap.head.right, heap.head.left)
-
-	heap = FibHeap()
-	for i in [1, 2]:
-		heap.insert(i)
-	heap._FibHeap__remove_node(heap.head)
-	print(heap.head, heap.min_node, heap.head.right, heap.head.left)
-
-def _FibHeap__remove_node_test_2():
-	heap = FibHeap()
-	mylist = [5, 3, 1, 7]
-	for i in mylist: heap.insert(i)
-	for j in range(len(mylist)):
-		heap._FibHeap__remove_node(heap.head)
-		heap.print_heap()
-
-def _FibHeap__remove_node_test_3():
-	heap = FibHeap()
-	mylist = [5, 3, 1, 7]
-	for i in mylist: heap.insert(i)
-	for j in range(len(mylist)):
-		heap._FibHeap__remove_node(heap.head.right)
-		print(f"After {j+1}th removal:")
-		heap.print_heap()
-
-def _FibHeap__remove_node_test_4():
-	heap = FibHeap()
-	mylist = [5, 3, 1, 7]
-	for i in mylist: heap.insert(i)
-	for j in range(len(mylist)):
-		heap._FibHeap__remove_node(heap.head.left)
-		print(f"After {j+1}th removal:")
-		heap.print_heap()
-
-def _FibHeap__remove_node_test_5():
-	heap = FibHeap()
-	mylist = None
-	def revert_to_initial():
-		nonlocal mylist, heap
-		mylist = [5, 3, 1, 7]
-		heap = FibHeap()
-		for i in mylist: heap.insert(i)
-
-	revert_to_initial()
-	heap._FibHeap__remove_node(heap.head.right.right)
-	print("New case: ")
-	heap.print_heap()
-
-	revert_to_initial()
-	heap._FibHeap__remove_node(heap.head)#.right.left)
-	print("New case: ")
-	heap.print_heap()
-	
-	revert_to_initial()
-	heap._FibHeap__remove_node(heap.head.left.left)
-	print("New case: ")
-	heap.print_heap()
-
-	revert_to_initial()
-	heap._FibHeap__remove_node(heap.head)
-	heap._FibHeap__remove_node(heap.head.right)
-	heap._FibHeap__remove_node(heap.head.left)
-	print("New case: ")
-	heap.print_heap()
-	
-def insert_test_1():
-	heap = FibHeap()
-	for i in [8, 9, 4, 2, 1]:
-		heap.insert(i)
-		print(f"Minimum = {heap.min_node}")
-		heap.print_heap()
-
-def merge_test_1():
-	heap = FibHeap()
-	for i in [8, 9, 4, 2, 1]:
-		heap.insert(i)
-
-	heap2 = FibHeap()
-	for i in [4, 3, 0, 7]:
-		heap2.insert(i)
-
-	heap.merge(heap2)
-	print("min = ", heap.min_node)
-	heap.print_heap()
-	print("min = ", heap2.min_node)
-	heap2.print_heap()
-
-def merge_test_2():
-	heap = FibHeap()
-	for i in [8, 9, 4, 2, 1]:
-		heap.insert(i)
-
-	heap2 = FibHeap()
-	for i in [4, 3, 0, 7]:
-		heap2.insert(i)
-
-	heap2.merge(heap)
-	print("min = ", heap.min_node)
-	heap.print_heap()
-	print("min = ", heap2.min_node)
-	heap2.print_heap()
-
-
-
-
-
-"""
-
-	def __consolidate(self):
-		self.degree_tree_map = defaultdict(lambda: None)
-
-		self.min_node = self.head
-		for cur_root in self.__root_list_generator():
-			if cur_root < self.min_node:
-				self.min_node = cur_root
-
-			other_root = self.degree_tree_map[cur_root.rank]
-			if other_root is None:
-				self.degree_tree_map[cur_root.rank] = cur_root
+		else:
+			if node.mark:
+				parent = node.parent
+				self.__cut(node)
+				self.__cascading_cut(parent)
 			else:
-				self.degree_tree_map[cur_root.rank] = None
-				if cur_root <= other_root:
-					self.__remove_node(other_root)
-					self.__link(cur_root, other_root) 
-					combined_root = cur_root
-				else:
-					self.__remove_node(cur_root)
-					self.__link(other_root, cur_root) 
-					combined_root = other_root
+				node.mark = True
 
-				self.degree_tree_map[combined_root.rank] = combined_root
-"""
+	def decrease_key(self, node, new_ele):
+		if node.ele < new_ele:
+			raise ValueError("new_ele is greater than node's current ele.")
+
+		node.ele = new_ele
+
+		"""
+		We don't have to change the position of node if 
+		node is a root or if decrease key doesn't violate heap property.
+
+		A node is in the root list because
+		(i) It was inserted and an extract min hasn't occured since.
+		(ii) It was inserted and when the extract min occured, it became a root of a tree.
+		(iii) It was cut from its parent during decrease_key.
+		(iv) It was on the first level and its parent was extracted, causing it to be added to the root list.
+
+		For cases (i) and (ii), node.parent would be None.
+		For case (iii), decrease_key's __cut clears node.parent
+		For case (iv), node.parent.ele is set to infinity after extraction, 
+		meaning node.ele would be lesser than node.parent.ele.
+		"""
+		if node.parent is None or node.parent.ele == INFINITY:
+			if self.min_node > node:
+				self.min_node = node
+			return
+
+		elif node >= node.parent:
+			pass
+		else:
+			parent = node.parent
+			self.__cut(node)
+			self.__cascading_cut(parent)
+
+	def __insert_node(self, new_node):
+		
+		if self.head:
+			self.__merge_lls(self.head, new_node)
+
+			if new_node < self.min_node: self.min_node = new_node
+
+		else: # empty heap
+			self.head = new_node
+			self.min_node = new_node
+
+	def insert(self, new_ele):
+		# Inserting the newnode at the end of the root list.
+		new_node = FibHeapNode(new_ele)
+		self.__insert_node(new_node)
+
