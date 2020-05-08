@@ -10,16 +10,21 @@ def read(grf):
 
 	# Checking if input file is specified as command line argument.
 	try:
-		fname = sys.argv[1]
+		fname = sys.argv[1] 
 	except IndexError:
 		fname = None
 
-	# Read input file if available otherwise read from stdin.
-	with open(fname) if fname else sys.stdin as input_file:
-		grf.read_from_file(input_file)
-	
+	try:
+		# Read input file if available otherwise read from stdin.
+		with open(fname) if fname else sys.stdin as input_file:
+			grf.read_from_file(input_file)
+			
+	except OSError:
+		print("File not found. \nNote: For paths, use forward slash and enclose in double quotes.")
+		exit()
+
 def main():
-	prims = [lazy_naive_prims, eager_naive_prims, binary_heap_prims, fib_heap_prims][3]
+	prims = [lazy_naive_prims, eager_naive_prims, binary_heap_prims, fib_heap_prims][2]
 	representation = {lazy_naive_prims: "matrix", 
 					  eager_naive_prims: "matrix",
 					  binary_heap_prims: "lists",
