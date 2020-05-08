@@ -50,27 +50,29 @@ class Graph:
 		for u in range(self.nfverts): 
 			inner_loop(u)
 
-	def change_representation(self): # Untested
+	def change_representation(self):
 
 		if self.representation == "matrix":
 			adj_lists = defaultdict(dict)
-			for i, row in enumerate(graph):
+			for i, row in enumerate(self.graph):
 				for j, ele in enumerate(row):
 					if ele != 0: adj_lists[i][j] = ele
 			self.graph = adj_lists
+			self.representation = "lists"
 		
 		else:
 			adj_mat = []
-			for i in range(nfverts):
+			for i in range(self.nfverts):
 				row = []
-				for j in range(nfverts):
+				for j in range(self.nfverts):
 					try:
-						ele = graph[i][j]
+						ele = self.graph[i][j]
 					except KeyError:
 						ele = 0
 					row.append(ele)
 				adj_mat.append(row)
 			self.graph = adj_mat
+			self.representation = "matrix"
 
 	def fill_with_zeros(self):
 		# Fill the adjacency matrix with zeros to initialize mst.
