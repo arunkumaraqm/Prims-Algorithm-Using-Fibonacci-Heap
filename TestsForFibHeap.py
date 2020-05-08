@@ -1,5 +1,7 @@
 from FibHeap import *
 
+# Some __methods have been since renamed _methods; so you'll need to change that here too.
+
 class DKTests_FibHeap(FibHeap):
 	def insert(self, new_ele):
 		# Inserting the newnode at the end of the root list.
