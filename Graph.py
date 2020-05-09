@@ -51,14 +51,18 @@ class Graph:
 			inner_loop(u)
 
 	def change_representation(self):
+		# Changes representation from matrix to lists or vice versa 
+		# and returns old representation
 
 		if self.representation == "matrix":
 			adj_lists = defaultdict(dict)
 			for i, row in enumerate(self.graph):
 				for j, ele in enumerate(row):
 					if ele != 0: adj_lists[i][j] = ele
+			temp = self.graph
 			self.graph = adj_lists
 			self.representation = "lists"
+			return temp
 		
 		else:
 			adj_mat = []
@@ -71,8 +75,10 @@ class Graph:
 						ele = 0
 					row.append(ele)
 				adj_mat.append(row)
+			temp = self.graph
 			self.graph = adj_mat
 			self.representation = "matrix"
+			return temp
 
 	def fill_with_zeros(self):
 		# Fill the adjacency matrix with zeros to initialize mst.
