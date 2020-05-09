@@ -7,45 +7,93 @@ from BinaryHeapPrims import prims_mst as binary_heap_prims
 from FibHeapPrims import prims_mst as fib_heap_prims
 from VisualizeMst import visualize
 
-def read(grf):
+choices = {"l": "lazy_naive_prims", 
+           "e": "eager_naive_prims", 
+           "b": "binary_heap_prims", 
+           "f": "fib_heap_prims"}
+
+representation_for_choice = {lazy_naive_prims: "matrix", 
+				 			 eager_naive_prims: "matrix",
+				  			 binary_heap_prims: "lists",
+				  			 fib_heap_prims: "lists"} 
+
+def read_graph(grf):
 
 	# Checking if input file is specified as command line argument.
 	try:
 		fname = sys.argv[1] 
 	except IndexError:
-		fname = None
+		fname = input("Enter test file name: ")
 
 	try:
-		# Read input file if available otherwise read from stdin.
-		with open(fname) if fname else sys.stdin as input_file:
+		with open(fname) as input_file:
 			grf.read_from_file(input_file)
 			
 	except OSError:
 		print("File not found. \nNote: For paths, use forward slash and enclose in double quotes.")
 		exit()
 
+def read_choices():
+	implementation_choice = input("Which implementation(s)?\nlazy_naive, eager_naive, binary_heap, or fib_heap: ")
+	display_choice = int(input("\nHow to display MST? 1. None,\n 2. Adjacency Matrix, or 3. Graph Visualization: "))
+	print()
+	return implementation_choice, display_choice
+
+def implement(implementation_choice, grf):	
+	for choice in implementation_choice:
+		prims_str = choices[choice]
+		prims = eval(prims_str)
+
+		if representation_for_choice[prims] == 'lists':
+			grf.matrix_to_lists()
+		else:
+			grf.lists_to_matrix()
+
+		start = time()
+		precursor = prims(grf)
+		end = time()
+
+		print("Duration for " + f"{prims_str}: ".ljust(20) + f"{(end - start) * 10**(9) : .0f} ns".rjust(20))
+	print()
+	return precursor
+
+def display_mst(display_choice, grf, adj_mat, precursor, mst, cost):
+
+	print(f"Cost of MST = {cost}")
+
+	if display_choice == 1:
+		pass
+
+	elif display_choice == 2:
+		if grf.nfverts > 20:
+			yn = input("Graph is too large. \nAre you sure you want to see the adjacency matrix of MST? ").lower()
+			if yn == 'yes' or yn == 'y':
+				print("Adjacency Matrix for MST: ")
+				print(mst)
+		else:
+			print("Adjacency Matrix for MST: ")
+			print(mst)
+
+	elif display_choice == 3:
+		if grf.nfverts > 15:
+			print("Graph is too large to display!")
+		elif grf.nfverts > 10:
+			print("Stripping edge weights for clearer graph.")
+			edges_in_mst = [(ind, precursor[ind]) for ind in range(1, grf.nfverts)]
+			visualize(adj_mat, edges_in_mst, strip_edge_weights = True)
+		else:
+			edges_in_mst = [(ind, precursor[ind]) for ind in range(1, grf.nfverts)]
+			visualize(adj_mat, edges_in_mst)
+
 def main():
 	grf = Graph(representation = "matrix")
-	read(grf)
-	adj_mat = grf.change_representation()
+	read_graph(grf)
+	adj_mat = grf.graph
 
-	prims = [lazy_naive_prims, eager_naive_prims, binary_heap_prims, fib_heap_prims][2]
-	representation = {lazy_naive_prims: "matrix", 
-					  eager_naive_prims: "matrix",
-					  binary_heap_prims: "lists",
-					  fib_heap_prims: "lists"} [prims]
-
-	start = time()
-	precursor = prims(grf)
-	end = time()
-
+	implementation_choice, display_choice = read_choices()	
+	precursor = implement(implementation_choice, grf)
 	mst, cost = compute_mst_and_cost(precursor, grf)
+	display_mst(display_choice, grf, adj_mat, precursor, mst, cost)
 
-	print(f"Cost = {cost}")
-	print(f"Duration: {(end - start) * 10**(9) : .0f} ns")
-
-	edges_in_mst = [(ind, precursor[ind]) for ind in range(1, grf.nfverts)]
-	
-	visualize(adj_mat, edges_in_mst)
-		
-main()
+if __name__ == "__main__":
+	main()
