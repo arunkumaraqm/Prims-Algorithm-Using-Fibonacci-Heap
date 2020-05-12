@@ -37,25 +37,45 @@ def add_some_more_edges(nfverts, mat, probability_distro_func):
 				mat[i][j] = probability_distro_func()
 				mat[j][i] = mat[i][j]
 				
+if __name__ == "__main__":
+	nfverts, density, limit = read()				
+	mat = [[0 for i in range(nfverts + 1)] \
+	          for j in range(nfverts + 1)]
 
-nfverts, density, limit = read()				
-mat = [[0 for i in range(nfverts + 1)] \
-          for j in range(nfverts + 1)]
+	rint = lambda: randint(1, limit)
+	random_weight_lambdas = {
 
-rint = lambda: randint(1, limit)
-random_weight_lambdas = {
+		# density: random_weight_lambda	
+		1: lambda: [rint(), 0, 0][randint(0,2)],
+		2: lambda: [rint(), rint(), 0][randint(0,2)],
+		3: lambda: [rint(), rint(), rint()][randint(0,2)]
+	}
+	probability_distro_func = random_weight_lambdas[density]
 
-	# density: random_weight_lambda	
-	1: lambda: [rint(), 0, 0][randint(0,2)],
-	2: lambda: [rint(), rint(), 0][randint(0,2)],
-	3: lambda: [rint(), rint(), rint()][randint(0,2)]
-}
-probability_distro_func = random_weight_lambdas[density]
+	generate_random_spanning_tree(nfverts, mat, rint)
+	add_some_more_edges(nfverts, mat, probability_distro_func)     
 
-generate_random_spanning_tree(nfverts, mat, rint)
-add_some_more_edges(nfverts, mat, probability_distro_func)     
+	fname = f"Tests/Graph Test ({nfverts}, {density}, {limit}).txt"  
+	print_mat(nfverts, mat, fname)
+	
+def automated_tests(nfverts, density, limit):		
+	mat = [[0 for i in range(nfverts + 1)] \
+	          for j in range(nfverts + 1)]
 
-fname = f"Tests/Graph Test ({nfverts}, {density}, {limit}).txt"  
-print_mat(nfverts, mat, fname)
+	rint = lambda: randint(1, limit)
+	random_weight_lambdas = {
+
+		# density: random_weight_lambda	
+		1: lambda: [rint(), 0, 0][randint(0,2)],
+		2: lambda: [rint(), rint(), 0][randint(0,2)],
+		3: lambda: [rint(), rint(), rint()][randint(0,2)]
+	}
+	probability_distro_func = random_weight_lambdas[density]
+
+	generate_random_spanning_tree(nfverts, mat, rint)
+	add_some_more_edges(nfverts, mat, probability_distro_func)     
+
+	fname = f"Tests/Mode {density}/Graph Test ({nfverts}, {density}, {limit}).txt"  
+	print_mat(nfverts, mat, fname)
 	
 
