@@ -1,4 +1,5 @@
 import sys
+import os
 from time import perf_counter as time
 from Graph import Graph, compute_mst_and_cost
 from LazyNaivePrims import prims_mst as lazy_naive_prims
@@ -22,6 +23,7 @@ def read_graph(grf):
 	# Checking if input file is specified as command line argument.
 	try:
 		fname = sys.argv[1] 
+		print(f"You have chosen the test file \"{fname}\"")
 	except IndexError:
 		fname = input("Enter test file name: ")
 
@@ -34,8 +36,8 @@ def read_graph(grf):
 		exit()
 
 def read_choices():
-	implementation_choice = input("Which implementation(s)?\nlazy_naive, eager_naive, binary_heap, or fib_heap: ")
-	display_choice = int(input("\nHow to display MST? 1. None,\n 2. Adjacency Matrix, or 3. Graph Visualization: "))
+	implementation_choice = input("\nWhich implementation(s)? \nlazy_naive, eager_naive, binary_heap, or fib_heap \nEnter: ")
+	display_choice = int(input("\nHow to display MST? \n1. None \n2. Adjacency Matrix \n3. Graph Visualization \nEnter: "))
 	print()
 	return implementation_choice, display_choice
 
@@ -87,6 +89,7 @@ def display_mst(display_choice, grf, adj_mat, precursor, mst, cost):
 
 def main():
 	grf = Graph(representation = "matrix")
+	os.system("clear")
 	read_graph(grf)
 	adj_mat = grf.graph
 
