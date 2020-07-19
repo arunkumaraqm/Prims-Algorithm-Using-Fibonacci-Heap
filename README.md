@@ -9,25 +9,25 @@
 	1. Using Adjacency Matrix and Traversal (aka Eager Naive implementation)
 	2. Using Adjacency Lists and a Binary Heap
 	3. Using Adjacency Lists and a [Fibonacci Heap](https://brilliant.org/wiki/fibonacci-heap/)
-- For much more detail, refer to the [project report](./Material/Project Report.pdf).
+- For much more detail, refer to the [project report](./Material/Project%20Report.pdf).
 
 # Time Complexities
 
-![Time complexities](./Material/Time Complexities.jpg)
+![Time complexities](./Material/Time%20Complexities.jpg)
 
 # Demo Screenshot
 
-![Demo Screenshot](./Material/Output Screenshot 2.JPG)
+![Demo Screenshot](./Material/Output%20Screenshot%202.JPG)
 
 # Observations & Conclusions
 - We generated hundreds of undirected connected graphs of different densities and ran them through our implementations.
 
 ## Low Input Sizes
-![](./Tests/Performance Comparison - Low Input Sizes Plot.png)
+![](./Tests/Performance%20Comparison%20-%20Low%20Input%20Sizes%20Plot.png)
 For low input sizes (10 to 200), the Fibonacci heap implementation took much more time than the other two. The eager naive approach took slightly lesser time than the binary heap implementation until the input size of approximately 160 vertices.
 
 ## Large Input Sizes
-![](./Tests/Performance Comparison - Large Input Sizes Plot.png)
+![](./Tests/Performance%20Comparison%20-%20Large%20Input%20Sizes%20Plot.png)
 For large input sizes (250 to 3500), the two heap implementations have more or less the same duration. The eager naive approach proves to be very inefficient when the input size exceeds 1000 vertices.
 
 ## Expectation
@@ -36,20 +36,27 @@ Since the Fibonacci heap implementation has a better time complexity than the ot
 # Installation
 
 ## Installing Dependencies
-Needs Python3 (Python 3.7 was used for development.)
-Needs matplotlib and networkx, both of which can be installed using pip.
+- Needs Python3 (Python 3.7 was used for development.)
+- Needs matplotlib and networkx, both of which can be installed using pip.
 
 ## Installing the Project
 Clone this repository using
+
 ```git init```
+
 
 ```git clone https://github.com/arunkumaraqm/Prims-Algorithm-Using-Fibonacci-Heap.git```
 
 # Usage
+
 `cd` into the folder and run the command
+
 ```python Driver.py```
+
 or
+
 ```python Driver.py GraphTest1```
+
 You may use any of the testfiles provided in the folder that you desire to replace GraphTest1. Please refer to the demo screenshot on how to provide further inputs.
 
 # Contribute
