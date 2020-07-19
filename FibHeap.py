@@ -49,7 +49,7 @@ class FibHeapNode:
 		An asterisk after the value indicates that this node is marked
 		"""
 
-#		if teststr == "silent": 
+		#if teststr == "silent": 
 		print(tabwidth*"    ", self.ele, '*' if self.mark else '', sep = "")
 
 		""" Debugging purposes

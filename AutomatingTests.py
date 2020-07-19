@@ -38,7 +38,6 @@ def generate_tests():
 			automated_tests(nfverts, density, limit)
 			print(f"Completed {nfverts, density, limit}.")
 
-generate_tests()
 def implement(implementation_choice, grf):	
 	duration = {'l': None, 'e': None, 'b': None, 'f': None}
 
@@ -62,8 +61,7 @@ def implement(implementation_choice, grf):
 def run_all_prims(fname):
 	grf = Graph(representation = "matrix")
 	read_graph(grf, fname)
-	adj_mat = grf.graph
-	duration = implement("ebf", grf)
+	duration = implement("bf", grf)
 	return duration
 
 
@@ -71,20 +69,22 @@ def time_tests():
 	limit = 999
 	for density in [1, 2, 3]:
 		mylist = []
-		lowest_nfverts = 2100
-		highest_nfverts = 3500
-		step = 100
-		for nfverts in range(lowest_nfverts, highest_nfverts + 1, step):
-			fname = f"Tests/Mode {density}/Graph Test ({nfverts}, {density}, {limit}).txt"
-			duration = run_all_prims(fname)
-			print(f"{fname} complete.")
-			mylist.append({'nfverts': nfverts,
-					   'l_duration': None,
-					   'e_duration': duration['e'],
-					   'b_duration': duration['b'],
-					   'f_duration': duration['f']})
+		for lowest_nfverts, highest_nfverts, step in [(10, 200, 10)]:
+			for nfverts in range(lowest_nfverts, highest_nfverts + 1, step):
+				fname = f"Tests/Mode {density}/Graph Test ({nfverts}, {density}, {limit}).txt"
+				duration = run_all_prims(fname)
+				print(f"{fname} complete.")
+				mylist.append({'nfverts': nfverts,
+						   'l_duration': duration['l'],
+						   'e_duration': duration['e'],
+						   'b_duration': duration['b'],
+						   'f_duration': duration['f']})
 		df = pd.DataFrame(mylist, columns = ['nfverts', 'l_duration', 'e_duration', 'b_duration', 'f_duration'])
-		df.to_csv(f"Tests/Durations (({lowest_nfverts}, {highest_nfverts}, {step}), {density}, {limit}).csv")
+		df.to_csv(f"Tests/Durations ((10, 200, 10), {density}, 999) (1).csv")
 
 
-time_tests()
+def foo():
+	fname = "Tests/Graph Test (10000, 3, 999).txt"
+	duration = run_all_prims(fname)
+	print(duration)
+foo()

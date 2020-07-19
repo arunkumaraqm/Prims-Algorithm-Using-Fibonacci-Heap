@@ -77,5 +77,5 @@ def automated_tests(nfverts, density, limit):
 
 	fname = f"Tests/Mode {density}/Graph Test ({nfverts}, {density}, {limit}).txt"  
 	print_mat(nfverts, mat, fname)
-	
+
 
