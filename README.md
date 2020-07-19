@@ -19,6 +19,8 @@
 
 ![Demo Screenshot](./Material/Output%20Screenshot%202.JPG)
 
+The minimum spanning tree is displayed in red.
+
 # Observations & Conclusions
 - We generated hundreds of undirected connected graphs of different densities and ran them through our implementations.
 
