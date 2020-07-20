@@ -9,11 +9,9 @@
 	1. Using Adjacency Matrix and Traversal (aka Eager Naive implementation)
 	2. Using Adjacency Lists and a Binary Heap
 	3. Using Adjacency Lists and a [Fibonacci Heap](https://brilliant.org/wiki/fibonacci-heap/)
+- [Here](./Material/Time%20Complexities.jpg) are the time complexities of priority queue operations as well as time complexities of the different implementations.
+- This project was done for the *Design and Analysis of Algorithms* course during my 2nd year at Dayananda Sagar University.
 - For much more detail, refer to the [project report](./Material/Project%20Report.pdf).
-
-# Time Complexities
-
-![Time complexities](./Material/Time%20Complexities.jpg)
 
 # Demo Screenshot
 
@@ -38,7 +36,7 @@ Since the Fibonacci heap implementation has a better time complexity than the ot
 # Installation
 
 ## Installing Dependencies
-- Needs Python3 (Python 3.7 was used for development.)
+- Needs Python 3. (Python 3.7 was used for development.)
 - Needs matplotlib and networkx, both of which can be installed using pip.
 
 ## Installing the Project
